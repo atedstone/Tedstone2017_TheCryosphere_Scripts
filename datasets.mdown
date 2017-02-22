@@ -1,0 +1,13 @@
+# Datasets
+
+## MAR 7.5 km version 1 (October 2016, not November)
+
+
+
+## Natural Earth shapefiles
+
+
+
+## MOD09GA and MOD10A1 collection 6 on MAR projection 
+
+but different grid dimensions and resolution
