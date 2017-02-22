@@ -6,6 +6,7 @@ first.
 
 """
 
+from prep_env_vars import *
 import plotmap
 import pyproj
 
@@ -27,7 +28,7 @@ n = 0
 
 fig_extent = (-52, -48, 65, 70)
 lon_0 = -40
-land_kws = dict(fc='#74C476', ec='none', alpha=1, zorder=200)
+land_kws = dict(fc='#F6E8C3', ec='none', alpha=1, zorder=200)
 ice_kws = dict(fc='white', ec='none', alpha=1, zorder=200)
 
 # Load in land and ice dataframes, just once
@@ -65,9 +66,11 @@ def facet(fig, ax, data, title_label, label_grid, imshow_kws):
 	
 	# Ticks/graticules
 	if label_grid:
-		facet_map.geo_ticks(3, 2, rotate_parallels=True)
+		facet_map.geo_ticks(3, 2, rotate_parallels=True, linewidth=0.5, 
+			color='#737373')
 	else:
-		facet_map.geo_ticks(3, 2, rotate_parallels=True,
+		facet_map.geo_ticks(3, 2, rotate_parallels=True, linewidth=0.5, 
+			color='#737373',
 			mlabels=[0,0,0,0], plabels=[0,0,0,0])
 	
 	for axis in ['top','bottom','left','right']:
