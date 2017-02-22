@@ -16,8 +16,8 @@ daily_perc_ice = (100 / tot_px) * ice
 
 b01_avg = b01.where(al <= 100).where(mask_dark > 0).mean(dim=('X', 'Y'))
 
-b01_avg = b01_avg.where(daily_perc_cloudy <= 50).where(daily_perc_ice > 90)
-#b01_avg = b01_avg.where(daily_perc_cloudy <= 50)
+#b01_avg = b01_avg.where(daily_perc_cloudy <= 50).where(daily_perc_ice > 90)
+b01_avg = b01_avg.where(daily_perc_cloudy <= 50)
 
 b01_pd = b01_avg.to_pandas().to_frame()
 b01_pd['Year'] = b01_pd.index.year
@@ -47,4 +47,4 @@ plt.xticks(np.array([121, 152, 182, 213, 244])-121, ['1 May', '1 Jun', '1 Jul', 
 ax.xaxis.set_tick_params(length=3, pad=1, width=0.5)
 ax.spines['bottom'].axis.axes.tick_params(direction='outward')
 
-plt.savefig('/home/at15963/Dropbox/work/black_and_bloom/papers/tedstone_darkice/submission1/figures/B01_icemasked.pdf')
+plt.savefig('/home/at15963/Dropbox/work/black_and_bloom/papers/tedstone_darkice/submission1/figures/B01.pdf')
