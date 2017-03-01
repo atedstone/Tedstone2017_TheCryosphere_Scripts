@@ -74,7 +74,7 @@ df_jja = pd.DataFrame({
 		'LWD_SHF_vs_SWD': ((LWD_JJA + SHF_JJA) / SWD_JJA).to_pandas()
 	})
 
-print(df.corr())
+print(df_jja.corr(method='spearman').round(2))
 
 ## Implement tests for normality...but do they actually tell us anything? (see belog post...)
 
@@ -92,4 +92,24 @@ for X_var in X_vars:
 	model = sm.OLS(y, X) # or QuantReg
 	results = model.fit() # if QuantReg, can pass p=percentile here
 	print(results.summary())
+
+
+
+### Scatters of most important variables only --------------------------------
+
+plt.figure()
+n = 1
+for y_var in ('B01_avg', 'dark_perc'):
+	for x_var in X_vars:
+		ax = subplot(2, 5, n)
+		plt.plot(df_jja[x_var], df_jja[y_var], 'o', mfc='#377EB8', mec='none', alpha=0.8)
+		if y_var == 'dark_perc':
+			plt.xlabel(x_var)
+		
+		if x_var == 'SHF_anom':
+			plt.ylabel(y_var)
+		else:
+			yticks, ylabels = plt.yticks()
+			plt.yticks(yticks, [])
+		n += 1
 
