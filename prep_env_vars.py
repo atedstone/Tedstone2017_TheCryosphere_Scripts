@@ -35,7 +35,7 @@ import mar_raster
 
 #rcParams['font.sans-serif'] = 'Segoe UI'
 rcParams['font.size'] = 6
-plt.style.use('seaborn-paper')
+#plt.style.use('seaborn-paper')
 rcParams['lines.linewidth'] = 1
 
 # ---------------------------------------------------------------------------- 
