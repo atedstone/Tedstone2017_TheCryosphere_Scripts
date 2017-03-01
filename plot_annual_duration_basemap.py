@@ -17,6 +17,7 @@ rcParams['xtick.major.pad'] = 3
 rcParams['figure.titlesize'] = 6
 
 # June=152
+# Also in statistics.py - make sure identical in both places!
 as_perc = (100. / ((243-152)-onset.bad_dur)) * onset.dark_dur
 toplot = as_perc \
 	.sel(TIME=slice('2000','2016')) \
