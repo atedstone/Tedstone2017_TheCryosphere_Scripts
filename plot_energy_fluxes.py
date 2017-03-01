@@ -48,7 +48,7 @@ SHF_JJA_clim = SHF_all_long.sel(TIME=slice('1981', '2000')) \
 	.where(SHF_all_long['TIME.season'] == 'JJA') \
 	.mean(dim=('X', 'Y', 'TIME'))
 
-SHF_JJA = (SHF_all_long.sel(TIME=slice('2000', '2016')) \
+SHF_JJA_anom = (SHF_all_long.sel(TIME=slice('2000', '2016')) \
 	.where(mar_mask_dark.r > 0) \
 	.where(SHF_all_long['TIME.season'] == 'JJA') \
 	.mean(dim=('X', 'Y')) \
@@ -121,9 +121,9 @@ if __name__ == '__main__':
 	plt.yticks([0, 40, 80, 120, 160], [0, 40, 80, 120, 160])
 	plt.tick_params(axis='x', bottom='off', top='off')
 
-	# JJA total precip
+	# Could actually move ANOMALIES in SHF onto subplot (a)...
 	ax_shf = plt.twinx()
-	SHF_JJA.plot(label='SHF', marker='o', color='black', markersize=4, mec='none')
+	SHF_JJA_anom.plot(label='SHF', marker='o', color='black', markersize=4, mec='none')
 	plt.ylabel('W m$^{-2}$')
 
 	ax_precip.spines['left'].axis.axes.tick_params(direction='outward')
