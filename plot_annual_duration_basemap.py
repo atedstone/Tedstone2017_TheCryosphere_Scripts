@@ -118,6 +118,6 @@ cbar.set_label('Dark % of good JJA observations', fontsize=6)
 
 # Save etc
 
-plt.savefig('/home/at15963/scripts/paper_darkice_manu/figures/dark_ice_45_JJA.pdf', dpi=300)
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/dark_ice_45_JJA.pdf', dpi=300)
 
 
