@@ -43,7 +43,7 @@ rcParams['lines.linewidth'] = 1
 ds_refl = xr.open_mfdataset('/scratch/MOD09GA.006.SW/*b1234q.nc',
 		chunks={'TIME':366})
 
-onset = xr.open_dataset('/scratch/physical_controls/MOD09GA.006.2000-2016.dark45.postsnow.MayAug.nc')
+onset = xr.open_dataset('/scratch/physical_controls/MOD09GA.006.2000-2016.dark45.postsnow.JJA.nc')
 
 mar_path = '/scratch/MARv3.6.2-7.5km-v2-ERA/ICE.20*nc'
 x_slice = slice(-586678,-254545)
