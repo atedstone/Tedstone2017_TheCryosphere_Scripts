@@ -5,12 +5,17 @@ Identify precipitation events, then examine their impact upon b01.
 """
 
 from prep_env_vars import *
+from plot_b01_heatmap import *
 
 
 ## Rain
 RF_all = mar_raster.open_mfxr(mar_path,
 	dim='TIME', transform_func=lambda ds: ds.RF.sel(X=x_slice, 
 		Y=y_slice))		
+
+# Maps of JJA rainfall each year.
+#figure(),RF_all.where(mar_mask_dark.r > 0).where(RF_all['TIME.season'] == 'JJA').resample('1AS', dim='TIME', how='sum').plot(col='TIME', col_wrap=9)
+
 
 # Rainfall event markers
 RF = RF_all.where(mar_mask_dark.r > 0).mean(dim=('X', 'Y'))
@@ -73,12 +78,33 @@ precip = pd.DataFrame({'e_snow': snow_events.resample('1D').first(),
 					   'e_rain': rain_events.resample('1D').first(),
 					   'd_snow': d_snow.resample('1D').first(), 
 					   'd_rain': d_rain.resample('1D').first(),
-					   'b01': b01_ts})
+					   'b01': b01_avg.to_pandas()})
 
 
 ## Analysis
 # Look at JJA only
-precip_jja = precip[(precip.index.month >= 6) & (precip.index.month <= 8)]
-precip_jja = precip_jja.assign(b01_pad=precip_jja.b01.fillna(method='pad', limit=3))
+pjja = precip[(precip.index.month >= 6) & (precip.index.month <= 8)]
+# could add limit=3 (for example) to stop propagating too far. 
+# But this approach probably ok for infilling JJA only.
+pjja = pjja.assign(b01_padf=precip_jja.b01.fillna(method='pad'))
+pjja = pjja.assign(b01_padb=precip_jja.b01.fillna(method='backfill'))
 
-precip_jja[(precip_jja.e_rain.shift(1) == 1) & (precip_jja.e_snow.shift(1) == 0) & (precip_jja.d_rain > 1) & (precip_jja.b01 <= 0.45)].diff(3).describe()
+
+# First-approximation identification of rainfall impact
+
+# (pjja.b01 <= 0.45)
+
+pjja[(pjja.e_rain == 1) & \
+	 (pjja.e_snow == 0) & \
+	 (pjja.d_rain >= 1)] \
+	.shift(1).diff(-3).describe()
+
+after = pjja[(pjja.e_rain == 1) & \
+     (pjja.e_snow == 0) & \
+     (pjja.d_rain >= 1) & (pjja.b01_padb <= 0.45)].shift(1)['b01_padb']
+before = pjja[(pjja.e_rain == 1) & \
+     (pjja.e_snow == 0) & \
+     (pjja.d_rain >= 1) & (pjja.b01_padf <= 0.45)].shift(-2)['b01_padf']
+(before - after).mean()
+
+pjja['e_rain'].resample('1AS').sum()

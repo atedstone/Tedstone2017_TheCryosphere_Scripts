@@ -31,6 +31,9 @@ RO1_all = mar_raster.open_mfxr(mar_path,
 	dim='TIME', transform_func=lambda ds: ds.RO1.sel(X=x_slice, 
 		Y=y_slice))
 
+SF_all = mar_raster.open_mfxr(mar_path,
+	dim='TIME', transform_func=lambda ds: ds.SF.sel(X=x_slice, 
+		Y=y_slice))
 
 
 ## Plot amount of snow above ice each spring

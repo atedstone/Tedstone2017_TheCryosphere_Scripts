@@ -112,7 +112,7 @@ plt.figure()
 n = 1
 for y_var in Y_vars:
 	for x_var in X_vars:
-		ax = subplot(4, 5, n)
+		ax = plt.subplot(4, 5, n)
 		plt.plot(df_jja[x_var], df_jja[y_var], 'o', mfc='#377EB8', mec='none', alpha=0.8)
 		if y_var == 'dark_norm':
 			plt.xlabel(x_var)
