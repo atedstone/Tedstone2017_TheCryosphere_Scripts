@@ -1,84 +1,8 @@
 from prep_env_vars import *
-from statistics import *
-
-mar_path_anomalies = '/scratch/MARv3.6.2-7.5km-v2-ERA/ICE.*nc'
-
-# Radiative fluxes -----------------------------------------------------------
-SW_all_long = mar_raster.open_mfxr(mar_path_anomalies,
-	dim='TIME', transform_func=lambda ds: ds.SWD.sel(X=x_slice, 
-		Y=y_slice))
-
-LW_all_long = mar_raster.open_mfxr(mar_path_anomalies,
-	dim='TIME', transform_func=lambda ds: ds.LWD.sel(X=x_slice, 
-		Y=y_slice))
-
-SWD_JJA_clim = SW_all_long.sel(TIME=slice('1981', '2000')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(SW_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y', 'TIME'))
-
-LWD_JJA_clim = LW_all_long.sel(TIME=slice('1981', '2000')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(SW_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y', 'TIME'))
-
-SWD_JJA = SW_all_long.sel(TIME=slice('2000', '2016')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(SW_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y')) \
-	.resample('1AS', dim='TIME', how='mean').load()
-
-LWD_JJA = LW_all_long.sel(TIME=slice('2000', '2016')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(LW_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y')) \
-	.resample('1AS', dim='TIME', how='mean').load()
-
-SWD_JJA_anom = (SWD_JJA - SWD_JJA_clim).load()
-LWD_JJA_anom = (LWD_JJA - LWD_JJA_clim).load()
+#from statistics import *
 
 
-# SHF anomalies --------------------------------------------------------------
-
-SHF_all_long = mar_raster.open_mfxr(mar_path_anomalies,
-	dim='TIME', transform_func=lambda ds: ds.SHF.sel(X=x_slice, 
-		Y=y_slice)) * -1
-
-SHF_JJA_clim = SHF_all_long.sel(TIME=slice('1981', '2000')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(SHF_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y', 'TIME'))
-
-SHF_JJA = SHF_all_long.sel(TIME=slice('2000', '2016')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(SHF_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y')) \
-	.resample('1AS', dim='TIME', how='mean').load()
-
-SHF_JJA_anom = (SHF_JJA - SHF_JJA_clim).load()
-
-
-# Precip ---------------------------------------------------------------------
-RF_all = mar_raster.open_mfxr(mar_path_anomalies,
-	dim='TIME', transform_func=lambda ds: ds.RF.sel(X=x_slice, 
-		Y=y_slice))
-
-RF_avg = RF_all.sel(TIME=slice('2000', '2016')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(RF_all['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y')) \
-	.resample('1AS', dim='TIME', how='sum').load()
-
-SF_all = mar_raster.open_mfxr(mar_path_anomalies,
-	dim='TIME', transform_func=lambda ds: ds.SF.sel(X=x_slice, 
-		Y=y_slice))
-
-SF_avg = SF_all.sel(TIME=slice('2000', '2016')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(RF_all['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y')) \
-	.resample('1AS', dim='TIME', how='sum').load()
-
+## Re-implement data loading logic here, remove to_pandas() calls below
 
 # ============================================================================
 
@@ -185,6 +109,8 @@ if __name__ == '__main__':
 	rat2 = ((LWD_JJA + SHF_JJA) / SWD_JJA).to_pandas()
 	plt.plot(rat1.index, rat1, label='LWD:SWD', marker='o', color='black', markersize=4, mec='none')
 	plt.plot(rat2.index, rat2, label='LWD+SHF : SWD', marker='o', color='black', linestyle=(0, (2,1)), markersize=4, mec='none')
+
+	plt.legend(numpoints=1, loc=8, frameon=False, ncol=2)
 
 	plt.ylabel('Ratio')
 	plt.ylim(0.7, 1.1)

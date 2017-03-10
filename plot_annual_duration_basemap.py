@@ -17,7 +17,7 @@ rcParams['xtick.major.pad'] = 3
 rcParams['figure.titlesize'] = 6
 
 # June=152
-# Also in statistics.py - make sure identical in both places!
+# Also in date_reduction_modis_1d.py - make sure identical in both places!
 as_perc = (100. / ((243-152)-onset.bad_dur)) * onset.dark_dur
 toplot = as_perc \
 	.sel(TIME=slice('2000','2016')) \
@@ -104,7 +104,7 @@ ax = plt.subplot(2, 9, n)
 mask_kws = dict(cmap='Blues', vmin=0, vmax=1, interpolation='none')
 mask_data = np.flipud(mask_dark.values)
 mask_data = np.where(mask_data == 1, 1, np.nan)
-f2 = facet(fig, ax, mask_data, 'Common Area', False, mask_kws)
+f2 = facet(fig, ax, mask_data, 'Common area', False, mask_kws)
 
 plt.subplots_adjust(wspace=0.05, hspace=0.05, bottom=0.15)
 
@@ -112,7 +112,7 @@ plt.subplots_adjust(wspace=0.05, hspace=0.05, bottom=0.15)
 cb_ax = fig.add_axes((0.25, 0.1, 0.5, 0.04))
 cbar = plt.colorbar(f.im, cax=cb_ax, orientation='horizontal', 
 	ticks=(0, 20, 40, 60, 80, 100), drawedges=False)
-cbar.set_label('Dark % of good JJA observations', fontsize=6)
+cbar.set_label('Dark % of cloud-free JJA observations', fontsize=6)
 
 
 

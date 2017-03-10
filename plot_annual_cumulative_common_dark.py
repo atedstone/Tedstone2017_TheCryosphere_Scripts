@@ -2,7 +2,14 @@ from prep_env_vars import *
 
 from matplotlib import dates
 
-#plt.style.use('seaborn-white')
+plt.style.use('default')
+
+rcParams['legend.fontsize'] = 6
+rcParams['xtick.labelsize'] = 6
+rcParams['figure.titlesize'] = 6
+rcParams['font.sans-serif'] = 'Arial'
+rcParams['font.size'] = 6
+
 fig = plt.figure(figsize=(5.5, 3))
 
 
@@ -104,12 +111,16 @@ for year in onset.TIME:
 	n += 1
 
 
-plt.subplots_adjust(wspace=0.1, hspace=0.2)
+plt.subplots_adjust(wspace=0.1, hspace=0.2, bottom=0.1, top=0.98)
 
-fig.text(0.06,0.61,'Mean Snow Depth (m)',ha='center',va='center',color='#1D91C0',rotation='vertical') 
-fig.text(0.966,0.63,'Dark Ice Extent (x 10$^4$ km$^3$)',ha='center',va='center',color='#CB181D',rotation='vertical') 
+# Axis labels
+fig.text(0.06, 0.61, 'Mean Snow Depth (m)', ha='center', va='center', 
+	color='#1D91C0', rotation='vertical') 
+fig.text(0.966, 0.63, 'Dark Ice Extent (x 10$^4$ km$^3$)', ha='center', 
+	va='center', color='#CB181D', rotation='vertical') 
+fig.text(0.51, 0.03, 'Month of Year', ha='center', va='center', color='black') 
 
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/snowdepth_darkice2.pdf')
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/snowdepth_darkice.pdf')
 
 
 

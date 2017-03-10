@@ -10,30 +10,19 @@ from prep_env_vars import *
 
 ## Load datasets
 
-SHSN0_all = mar_raster.open_mfxr(mar_path,
-	dim='TIME', transform_func=lambda ds: ds.SHSN0.sel(X=x_slice, 
-		Y=y_slice))
-
+## I think loading needs to stay here for the moment. This isn't a big deal, the major datasets to resolve
+# are the ones which are used in multiple analysis files. These aren't just yet
 
 SHSN2_all = mar_raster.open_mfxr(mar_path,
 	dim='TIME', transform_func=lambda ds: ds.SHSN2.sel(X=x_slice, 
 		Y=y_slice))
 
-SHSN3_all = mar_raster.open_mfxr(mar_path,
-	dim='TIME', transform_func=lambda ds: ds.SHSN3.sel(X=x_slice, 
-		Y=y_slice))
 
 WA1_all = mar_raster.open_mfxr(mar_path,
 	dim='TIME', transform_func=lambda ds: ds.WA1.sel(X=x_slice, 
 		Y=y_slice))
 
-RO1_all = mar_raster.open_mfxr(mar_path,
-	dim='TIME', transform_func=lambda ds: ds.RO1.sel(X=x_slice, 
-		Y=y_slice))
 
-SF_all = mar_raster.open_mfxr(mar_path,
-	dim='TIME', transform_func=lambda ds: ds.SF.sel(X=x_slice, 
-		Y=y_slice))
 
 
 ## Plot amount of snow above ice each spring

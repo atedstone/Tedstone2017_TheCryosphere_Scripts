@@ -1,85 +1,32 @@
 from prep_env_vars import *
 
-from plot_energy_fluxes import *
-from plot_b01_heatmap import *
-
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
-
-### Import additional data  --------------------------------------------------
-
-# Dark ice percentage
-# Copied from plot_annual_duration_basemap.py - make sure they stay the same!
-as_perc = (100. / ((243-152)-onset.bad_dur)) * onset.dark_dur
-toplot = as_perc \
-	.sel(TIME=slice('2000','2016')) \
-	.where(onset.dark_dur > 5) \
-	.where(mask_dark == 1)
-
-# B01 average post-bare
-B01_avg_bare = b01_avg.where(modis_periods_bare2end) \
-	.resample('1AS', dim='TIME', how='mean').to_pandas()
-
-
-# Melt anomaly
-ME_all_long = mar_raster.open_mfxr(mar_path_anomalies,
-	dim='TIME', transform_func=lambda ds: ds.ME.sel(X=x_slice, 
-		Y=y_slice))
-
-ME_JJA_clim = ME_all_long.sel(TIME=slice('1981', '2000')) \
-	.isel(SECTOR1_1=0) \
-	.where(mar_mask_dark.r > 0) \
-	.where(ME_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y', 'TIME'))
-
-ME_JJA = ME_all_long.sel(TIME=slice('2000', '2016')) \
-	.isel(SECTOR1_1=0) \
-	.where(mar_mask_dark.r > 0) \
-	.where(ME_all_long['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y')) \
-	.resample('1AS', dim='TIME', how='mean').load()	
-
-ME_JJA_anom = (ME_JJA - ME_JJA_clim).load()
-
-
-# TTMIN
-
-ttmin_all = mar_raster.open_mfxr(mar_path,
-	dim='TIME', transform_func=lambda ds: ds.TTMIN.sel(X=x_slice, 
-		Y=y_slice))
-
-ttmin_JJA = ttmin_all.sel(TIME=slice('2000', '2016')) \
-	.where(mar_mask_dark.r > 0) \
-	.where(ttmin_all['TIME.season'] == 'JJA') \
-	.mean(dim=('X', 'Y'))
-
-ttmin_JJA_count = ttmin_JJA.where(ttmin_JJA > 0) \
-	.groupby('TIME.year').count(dim='TIME')
-
-ttmin_JJA_count_pd = ttmin_JJA_count.to_pandas().squeeze()
-ttmin_JJA_count_pd.index = pd.date_range('2000-01-01', '2016-01-01', freq='1AS')
-
-
-dark_perc = toplot.median(dim=('X', 'Y')).to_pandas()
-B01_avg = b01_avg.where(b01_avg['TIME.season'] == 'JJA').resample('1AS', dim='TIME', how='mean').to_pandas()
-dark_norm = dark_perc / (B01_avg * 100)
 
 ### Construct data frames ----------------------------------------------------
 
+lwd = read_data(store_path + 'LWD_JJA_absolute_mean.csv', 'LWD')
+swd = read_data(store_path + 'SWD_JJA_absolute_mean.csv', 'SWD')
+shf = read_data(store_path + 'SHF_JJA_absolute_mean.csv', 'SHF')
+ratio = (lwd+shf) / swd
+
 # ideally need some flickering metric as well.
 df_jja = pd.DataFrame({
-		'SWD_anom': SWD_JJA_anom.to_pandas(),
-		'LWD_anom': LWD_JJA_anom.to_pandas(),
-		'SHF_anom': SHF_JJA_anom.to_pandas(),
-		'RF_avg': RF_avg.to_pandas(),
-		'dark_perc': dark_perc,
-		'B01_avg': B01_avg,
-		'B01_avg_bare': B01_avg_bare,
-		'dark_norm': dark_norm,
-		'melt': ME_JJA_anom.to_pandas().squeeze(),
+		'SWD_anom': read_data(store_path + 'SWD_JJA_anomalies.csv', 'SWD_anom'),
+		'LWD_anom': read_data(store_path + 'LWD_JJA_anomalies.csv', 'LWD_anom'),
+		'SHF_anom': read_data(store_path + 'SHF_JJA_anomalies.csv', 'SHF_anom'),
+		'RF_sum': read_data(store_path + 'RF_JJA_sum.csv', 'RF_sum'),
+		'dark_perc': read_data(store_path + 'B01_JJA_darkperc.csv', 'dark_perc'),
+		'B01_avg': read_data(store_path + 'B01_avg_JJA.csv', 'B01_avg'),
+		'B01_avg_bare': read_data(store_path + 'B01_avg_bareice_JJA.csv', 'B01_avg_bare'),
+		'dark_norm': read_data(store_path + 'dark_norm_JJA.csv', 'dark_norm'),
+		'dark_norm_bare': read_data(store_path + 'dark_norm_bare_JJA.csv', 'dark_norm_bare'),
+		'melt_mean_anomaly': read_data(store_path + 'ME_JJA_meandailyrate.csv', 'melt_mean_anomaly'),
+		#'melt_mean_anomaly_bare': read_data(store_path + 'ME_JJA_meltdailyrate_bare.csv'), ## not yet available
 		'snow_clear_doy': onset.bare.where(mask_dark > 0).mean(dim=['X','Y']).to_pandas(),
-		'ttmin_count': ttmin_JJA_count_pd,
-		'LWD_SHF_vs_SWD': ((LWD_JJA + SHF_JJA) / SWD_JJA).to_pandas()
+		'ttmin_count': read_data(store_path + 'TTMIN_JJA_count.csv', 'ttmin_count'),
+		'LWD_SHF_vs_SWD': ratio
 	})
 
 print(df_jja.corr(method='spearman').round(2))
@@ -92,9 +39,12 @@ df_jja.to_excel('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/
 
 ### Regression for JJA annual values -----------------------------------------
 
-X_vars = ('SHF_anom', 'melt', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD')
-Y_vars = ('B01_avg', 'B01_avg_bare', 'dark_perc', 'dark_norm')
+X_vars = ('SHF_anom', 'melt_mean_anomaly', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum')
+Y_vars = ('B01_avg', 'B01_avg_bare', 'dark_perc', 'dark_norm', 'dark_norm_bare')
 
+r2 = []
+p = []
+xx = []
 for Y_var in Y_vars:
 	for X_var in X_vars:
 		X = df_jja[X_var]
@@ -103,6 +53,9 @@ for Y_var in Y_vars:
 		model = sm.OLS(y, X) # or QuantReg
 		results = model.fit() # if QuantReg, can pass p=percentile here
 		print(results.summary())
+		r2.append(results.rsquared)
+		p.append(results.pvalues[1])
+		xx.append(results.params[1])
 
 
 
@@ -110,11 +63,12 @@ for Y_var in Y_vars:
 
 plt.figure()
 n = 1
+#Y_vars = ('dark_norm',)
 for y_var in Y_vars:
 	for x_var in X_vars:
-		ax = plt.subplot(4, 5, n)
+		ax = plt.subplot(len(Y_vars), len(X_vars), n)
 		plt.plot(df_jja[x_var], df_jja[y_var], 'o', mfc='#377EB8', mec='none', alpha=0.8)
-		if y_var == 'dark_norm':
+		if y_var == Y_vars[-1]:
 			plt.xlabel(x_var)
 		
 		if x_var == 'SHF_anom':
@@ -122,5 +76,9 @@ for y_var in Y_vars:
 		else:
 			yticks, ylabels = plt.yticks()
 			plt.yticks(yticks, [])
+
+		plt.title('R2 %.2f, p %.2f' %(r2[n-1], p[n-1]))
 		n += 1
 
+plt.tight_layout()		
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/jja_scatter_2.pdf')

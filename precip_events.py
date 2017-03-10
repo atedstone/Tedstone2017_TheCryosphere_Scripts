@@ -9,16 +9,9 @@ from plot_b01_heatmap import *
 
 
 ## Rain
-RF_all = mar_raster.open_mfxr(mar_path,
-	dim='TIME', transform_func=lambda ds: ds.RF.sel(X=x_slice, 
-		Y=y_slice))		
 
-# Maps of JJA rainfall each year.
-#figure(),RF_all.where(mar_mask_dark.r > 0).where(RF_all['TIME.season'] == 'JJA').resample('1AS', dim='TIME', how='sum').plot(col='TIME', col_wrap=9)
+# data reduction stage now in data_reduction_1d.py!!
 
-
-# Rainfall event markers
-RF = RF_all.where(mar_mask_dark.r > 0).mean(dim=('X', 'Y'))
 RF_pd = RF.to_pandas().to_frame()
 RF_pd.columns = ('RF',)
 

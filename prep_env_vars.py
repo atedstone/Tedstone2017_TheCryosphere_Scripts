@@ -51,6 +51,11 @@ y_slice = slice(-949047,69833)
 
 min_dark_days = 10
 
+store_path = '/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/data/'
+
+
+def read_data(fpath, name):
+	return pd.read_csv(fpath, index_col=0, skiprows=0, names=[name,], parse_dates=True, infer_datetime_format=True).squeeze()
 
 # ----------------------------------------------------------------------------
 ## Improve ICE MARGINS mask prior to generating any statistics
