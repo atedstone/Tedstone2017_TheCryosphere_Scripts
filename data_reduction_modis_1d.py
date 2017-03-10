@@ -15,9 +15,9 @@ daily_perc_cloudy = (100 / tot_px) * cloudy
 ice = b02.where(b02 < 0.6).where(mask_dark > 0).count(dim=('X', 'Y'))
 
 b01_avg = b01.where(al <= 100).where(mask_dark > 0).mean(dim=('X', 'Y'))
-b01_avg.to_pandas().to_csv(store_path + 'B01_avg_incl_clouds.csv')
+b01_avg.to_pandas().to_csv(store_path + 'B01_avg_incl_clouds_daily.csv')
 b01_avg = b01_avg.where(daily_perc_cloudy <= 50)
-b01_avg.to_pandas().to_csv(store_path + 'B01_avg_clouds50.csv')
+b01_avg.to_pandas().to_csv(store_path + 'B01_avg_clouds50_daily.csv')
 
 
 
@@ -32,16 +32,16 @@ toplot = as_perc \
 
 B01_avg_bare = b01_avg.where(modis_periods_bare2end) \
 	.resample('1AS', dim='TIME', how='mean').to_pandas()
-B01_avg_bare.to_csv(store_path + 'B01_avg_bareice.csv')
+B01_avg_bare.to_csv(store_path + 'B01_avg_bareice_JJA.csv')
 
 dark_perc = toplot.median(dim=('X', 'Y')).to_pandas()
 dark_perc.to_csv(store_path + 'B01_JJA_darkperc.csv')
 
 B01_avg = b01_avg.where(b01_avg['TIME.season'] == 'JJA').resample('1AS', dim='TIME', how='mean').to_pandas()
-B01_avg.to_csv(store_path + 'B01_avg.csv')
+B01_avg.to_csv(store_path + 'B01_avg_JJA.csv')
 
 dark_norm = dark_perc / (B01_avg * 100)
-dark_norm.to_csv(store_path + 'dark_norm.csv')
+dark_norm.to_csv(store_path + 'dark_norm_JJA.csv')
 
 dark_norm_bare = dark_perc / (B01_avg_bare * 100)
-dark_norm_bare.to_csv(store_path + 'dark_norm_bare.csv')
+dark_norm_bare.to_csv(store_path + 'dark_norm_bare_JJA.csv')
