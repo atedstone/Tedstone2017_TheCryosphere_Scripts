@@ -22,11 +22,13 @@ df_jja = pd.DataFrame({
 		'B01_avg_bare': read_data(store_path + 'B01_avg_bareice_JJA.csv', 'B01_avg_bare'),
 		'dark_norm': read_data(store_path + 'dark_norm_JJA.csv', 'dark_norm'),
 		'dark_norm_bare': read_data(store_path + 'dark_norm_bare_JJA.csv', 'dark_norm_bare'),
-		'melt_mean_anomaly': read_data(store_path + 'ME_JJA_meandailyrate.csv', 'melt_mean_anomaly'),
-		#'melt_mean_anomaly_bare': read_data(store_path + 'ME_JJA_meltdailyrate_bare.csv'), ## not yet available
+		'melt_rate_JJA_anomaly': read_data(store_path + 'ME_JJA_meandailyrateanomaly.csv', 'melt_rate_anomaly'),
+		'melt_rate_bare': read_data(store_path + 'ME_bare_meandailyrate.csv', 'melt_rate_bare'), ## not yet available
 		'snow_clear_doy': onset.bare.where(mask_dark > 0).mean(dim=['X','Y']).to_pandas(),
 		'ttmin_count': read_data(store_path + 'TTMIN_JJA_count.csv', 'ttmin_count'),
-		'LWD_SHF_vs_SWD': ratio
+		'LWD_SHF_vs_SWD': ratio,
+		'snow_sum_JJA': read_data(store_path + 'SF_JJA_sum.csv', 'sf_jja_sum'),
+		'snow_sum_bare': read_data(store_path + 'SF_bare_sum.csv', 'sf_bare_sum')
 	})
 
 print(df_jja.corr(method='spearman').round(2))
@@ -39,8 +41,8 @@ df_jja.to_excel('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/
 
 ### Regression for JJA annual values -----------------------------------------
 
-X_vars = ('SHF_anom', 'melt_mean_anomaly', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum')
-Y_vars = ('B01_avg', 'B01_avg_bare', 'dark_perc', 'dark_norm', 'dark_norm_bare')
+X_vars = ('SHF_anom', 'melt_rate_JJA_anomaly', 'melt_rate_bare', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum', 'snow_sum_JJA', 'snow_sum_bare')
+Y_vars = ('B01_avg', 'B01_avg_bare', 'dark_perc', 'dark_norm', 'dark_norm_bare', 'SHF_anom')
 
 r2 = []
 p = []
@@ -61,7 +63,7 @@ for Y_var in Y_vars:
 
 ### Scatters of most important variables only --------------------------------
 
-plt.figure()
+plt.figure(figsize=(15,9))
 n = 1
 #Y_vars = ('dark_norm',)
 for y_var in Y_vars:
@@ -81,4 +83,4 @@ for y_var in Y_vars:
 		n += 1
 
 plt.tight_layout()		
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/jja_scatter_2.pdf')
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/jja_scatter_3.pdf')

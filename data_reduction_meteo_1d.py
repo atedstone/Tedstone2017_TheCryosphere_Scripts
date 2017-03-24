@@ -31,6 +31,14 @@ ME_JJA = ME_all_long.sel(TIME=slice('2000', '2016')) \
 	.resample('1AS', dim='TIME', how='mean').to_pandas()
 ME_JJA.to_csv(store_path + 'ME_JJA_meandailyrate.csv')
 
+ME_bare = ME_all_long.sel(TIME=slice('2000', '2016')) \
+	.isel(SECTOR1_1=0) \
+	.where(mar_mask_dark.r > 0) \
+	.where(periods_bare2end) \
+	.mean(dim=('X', 'Y')) \
+	.resample('1AS', dim='TIME', how='mean').to_pandas()
+ME_bare.to_csv(store_path + 'ME_bare_meandailyrate.csv')
+
 ME_JJA_anom = ME_JJA - ME_JJA_clim
 ME_JJA_anom.to_csv(store_path + 'ME_JJA_meandailyrateanomaly.csv')
 
@@ -140,6 +148,12 @@ SF_JJA_sum = SF_all.sel(TIME=slice('2000', '2016')) \
 	.resample('1AS', dim='TIME', how='sum').to_pandas()
 SF_JJA_sum.to_csv(store_path + 'SF_JJA_sum.csv')
 
+SF_bare_sum = SF_all.sel(TIME=slice('2000', '2016')) \
+	.where(mar_mask_dark.r > 0) \
+	.where(periods_bare2end) \
+	.mean(dim=('X', 'Y')) \
+	.resample('1AS', dim='TIME', how='sum').to_pandas()
+SF_bare_sum.to_csv(store_path + 'SF_bare_sum.csv')
 
 
 ## From precip_events.py -----------------------------------------------------
