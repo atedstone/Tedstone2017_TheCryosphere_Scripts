@@ -10,9 +10,9 @@ from prep_env_vars import *
 
 mar_path_anomalies = '/scratch/MARv3.6.2-7.5km-v2-ERA/ICE.*nc'
 
-## FROM STATISTICS.PY --------------------------------------------------------
+# FROM STATISTICS.PY --------------------------------------------------------
 
-# Melt anomaly
+Melt anomaly
 ME_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 	dim='TIME', transform_func=lambda ds: ds.ME.sel(X=x_slice, 
 		Y=y_slice))
@@ -63,7 +63,7 @@ ttmin_JJA_count_pd.to_csv(store_path + 'TTMIN_JJA_count.csv')
 
 
 
-# Radiative fluxes -----------------------------------------------------------
+# # Radiative fluxes -----------------------------------------------------------
 SW_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 	dim='TIME', transform_func=lambda ds: ds.SWD.sel(X=x_slice, 
 		Y=y_slice))
@@ -71,6 +71,19 @@ SW_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 LW_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 	dim='TIME', transform_func=lambda ds: ds.LWD.sel(X=x_slice, 
 		Y=y_slice))
+
+# Absolute fluxes for Andy
+SW_abs = SW_all_long.sel(TIME=slice('2000', '2016')) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')) \
+	.to_pandas().resample('24H').first()
+SW_abs.to_csv(store_path + 'SW_abs.csv')	
+
+LW_abs = LW_all_long.sel(TIME=slice('2000', '2016')) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')) \
+	.to_pandas().resample('24H').first()
+LW_abs.to_csv(store_path + 'LW_abs.csv')	
 
 SWD_JJA_clim = SW_all_long.sel(TIME=slice('1981', '2000')) \
 	.where(mar_mask_dark.r > 0) \
@@ -102,7 +115,7 @@ LWD_JJA_anom = (LWD_JJA - LWD_JJA_clim)
 LWD_JJA_anom.to_csv(store_path + 'LWD_JJA_anomalies.csv')
 
 
-# SHF anomalies --------------------------------------------------------------
+# # SHF anomalies --------------------------------------------------------------
 
 SHF_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 	dim='TIME', transform_func=lambda ds: ds.SHF.sel(X=x_slice, 
@@ -123,6 +136,13 @@ SHF_JJA.to_csv(store_path + 'SHF_JJA_absolute_mean.csv')
 SHF_JJA_anom = (SHF_JJA - SHF_JJA_clim)
 SHF_JJA_anom.to_csv(store_path + 'SHF_JJA_anomalies.csv')
 
+
+# Absolute SHF - for Andy
+SHF_abs = SHF_all_long.sel(TIME=slice('2000', '2016')) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')) \
+	.to_pandas().resample('24H').first()
+SHF_abs.to_csv(store_path + 'SHF_abs.csv')	
 
 
 # Precip ---------------------------------------------------------------------
