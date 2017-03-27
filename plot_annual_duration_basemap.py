@@ -10,6 +10,8 @@ from prep_env_vars import *
 import plotmap
 import pyproj
 
+rcParams['font.sans-serif'] = 'Arial'
+rcParams['axes.unicode_minus'] = False
 rcParams['legend.fontsize'] = 6
 rcParams['xtick.labelsize'] = 6
 rcParams['xtick.direction'] = 'in'
@@ -29,11 +31,14 @@ n = 0
 
 fig_extent = (-52, -48, 65, 70)
 lon_0 = -40
+ocean_kws = dict(fc='#C6DBEF', ec='none', alpha=1, zorder=199)
 land_kws = dict(fc='#F6E8C3', ec='none', alpha=1, zorder=200)
-ice_kws = dict(fc='white', ec='none', alpha=1, zorder=200)
+ice_kws = dict(fc='white', ec='none', alpha=1, zorder=201)
 
 # Load in land and ice dataframes, just once
 shps_loader = plotmap.Map(extent=fig_extent, lon_0=lon_0)
+df_ocean = shps_loader.load_polygons(shp_file='/scratch/L0data/NaturalEarth/ne_50m_ocean/ne_50m_ocean', 
+	label='ocean')
 df_land = shps_loader.load_polygons(shp_file='/scratch/L0data/NaturalEarth/ne_50m_land/ne_50m_land', 
 	label='land')
 df_ice = shps_loader.load_polygons(shp_file='/scratch/L0data/NaturalEarth/ne_50m_glaciated_areas/ne_50m_glaciated_areas', 
@@ -54,9 +59,10 @@ def facet(fig, ax, data, title_label, label_grid, imshow_kws):
 	facet_map = plotmap.Map(extent=fig_extent, lon_0=lon_0, fig=fig, ax=ax)
 
 	# Draw basic underlays
-	facet_map.map.drawmapboundary(fill_color='#C6DBEF')
+	#facet_map.plot_polygons(df=df_ocean, plot_kws=ocean_kws)
 	facet_map.plot_polygons(df=df_land, plot_kws=land_kws)
 	facet_map.plot_polygons(df=df_ice, plot_kws=ice_kws)
+	facet_map.map.drawmapboundary(fill_color='#C6DBEF', linewidth=0)
 
 	# Data
 	facet_map.im = facet_map.ax.imshow(data, extent=data_extent, zorder=300, **imshow_kws)
@@ -68,7 +74,7 @@ def facet(fig, ax, data, title_label, label_grid, imshow_kws):
 	# Ticks/graticules
 	if label_grid:
 		facet_map.geo_ticks(3, 2, rotate_parallels=True, linewidth=0.5, 
-			color='#737373')
+			color='#737373', fontsize=6)
 	else:
 		facet_map.geo_ticks(3, 2, rotate_parallels=True, linewidth=0.5, 
 			color='#737373',
@@ -113,11 +119,12 @@ cb_ax = fig.add_axes((0.25, 0.1, 0.5, 0.04))
 cbar = plt.colorbar(f.im, cax=cb_ax, orientation='horizontal', 
 	ticks=(0, 20, 40, 60, 80, 100), drawedges=False)
 cbar.set_label('Dark % of cloud-free JJA observations', fontsize=6)
+cbar.outline.set_visible(False)
 
 
 
 # Save etc
 
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/dark_ice_45_JJA.pdf', dpi=300)
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/dark_ice_45_JJA_fix.pdf', dpi=300)
 
 
