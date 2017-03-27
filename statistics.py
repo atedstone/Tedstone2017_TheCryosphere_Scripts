@@ -41,7 +41,7 @@ df_jja.to_excel('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/
 
 ### Regression for JJA annual values -----------------------------------------
 
-X_vars = ('SHF_anom', 'melt_rate_JJA_anomaly', 'melt_rate_bare', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum', 'snow_sum_JJA', 'snow_sum_bare')
+X_vars = ('SHF_anom', 'melt_rate_JJA_anomaly', 'melt_rate_bare', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum', 'snow_sum_JJA', 'snow_sum_bare', 'SWD_anom', 'LWD_anom')
 Y_vars = ('B01_avg', 'B01_avg_bare', 'dark_perc', 'dark_norm', 'dark_norm_bare', 'SHF_anom')
 
 r2 = []
@@ -84,3 +84,32 @@ for y_var in Y_vars:
 
 plt.tight_layout()		
 plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/jja_scatter_3.pdf')
+plt.close()
+
+
+### Scatters for paper
+X_vars = ('SHF_anom', 'melt_rate_JJA_anomaly', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'snow_sum_bare')
+Y_vars = ('B01_avg', 'dark_norm')
+plt.figure(figsize=(10, 5))
+n = 1
+#Y_vars = ('dark_norm',)
+for y_var in Y_vars:
+	for x_var in X_vars:
+		ax = plt.subplot(len(Y_vars), len(X_vars), n)
+		plt.plot(df_jja[x_var], df_jja[y_var], 'o', mfc='#377EB8', mec='none', alpha=0.8)
+		if y_var == Y_vars[-1]:
+			plt.xlabel(x_var)
+		
+		if x_var == 'SHF_anom':
+			plt.ylabel(y_var)
+		else:
+			yticks, ylabels = plt.yticks()
+			plt.yticks(yticks, [])
+
+		#plt.title('R2 %.2f, p %.2f' %(r2[n-1], p[n-1]))
+		n += 1
+
+plt.tight_layout()		
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/scatter_paper.pdf')
+
+
