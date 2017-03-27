@@ -24,7 +24,7 @@ from scipy import ndimage
 import datetime as dt
 import statsmodels.api as sm
 import calendar
-#import seaborn as sns
+import seaborn as sns
 import cartopy.crs as ccrs
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
@@ -34,9 +34,23 @@ import pandas as pd
 import mar_raster
 
 #rcParams['font.sans-serif'] = 'Segoe UI'
-rcParams['font.size'] = 6
-#plt.style.use('seaborn-paper')
-rcParams['lines.linewidth'] = 1
+# rcParams['font.size'] = 6
+# #plt.style.use('seaborn-paper')
+# rcParams['lines.linewidth'] = 1
+
+my_styles = {
+	'font.size': 6,
+	'font.sans-serif': 'Arial',
+	# 'xtick.major.size': 6, 
+	# 'ytick.major.size': 6,
+	'axes.labelsize': 6,
+	'xtick.labelsize': 6,
+	'ytick.labelsize': 6,
+	'legend.fontsize': 6
+}
+sns.set_style("white")
+#sns.set_style("ticks", my_styles)
+sns.despine() # or e.g. sns.despine(offset=10, trim=True)
 
 # ---------------------------------------------------------------------------- 
 ## Load in data and set global parameters 
