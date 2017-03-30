@@ -88,7 +88,7 @@ def facet(fig, ax, data, title_label, label_grid, imshow_kws):
 
 
 # Construct facet plot, subplot-by-subplot
-fig = plt.figure(figsize=(5.5, 3))
+fig = plt.figure(figsize=(6.5, 4))
 n = 1
 imshow_kws = dict(cmap='Reds', vmin=0, vmax=100, interpolation='none')
 for year in toplot:
@@ -112,7 +112,7 @@ mask_data = np.flipud(mask_dark.values)
 mask_data = np.where(mask_data == 1, 1, np.nan)
 f2 = facet(fig, ax, mask_data, 'Common area', False, mask_kws)
 
-plt.subplots_adjust(wspace=0.05, hspace=0.05, bottom=0.15)
+plt.subplots_adjust(wspace=0.05, hspace=0.13, bottom=0.15, left=0.03, right=0.97, top=0.95)
 
 # Add colorbar for the duration plots
 cb_ax = fig.add_axes((0.25, 0.1, 0.5, 0.04))
