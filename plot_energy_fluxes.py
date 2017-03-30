@@ -22,8 +22,39 @@ rcParams['axes.unicode_minus'] = False
 fig = plt.figure(figsize=(3.5, 4))
 xticks = ['2000-01-01', '2002-01-01', '2004-01-01', '2006-01-01', '2008-01-01', '2010-01-01', '2012-01-01', '2014-01-01', '2016-01-01']
 
+
+## Subplot: radiative fluxes -------------------------------------------------
+ax_rad = plt.subplot(3, 1, 1)
+
+plt.axhline(y=0, color='gray', linewidth=0.5)
+
+LWD_JJA_anom_pd = read_data(store_path + 'LWD_JJA_anomalies.csv', 'LWD')
+plt.plot(LWD_JJA_anom_pd.index, LWD_JJA_anom_pd, label='LWd', marker='o', color='#E31A1C', markersize=4, mec='none')
+SWD_JJA_anom_pd = read_data(store_path + 'SWD_JJA_anomalies.csv', 'SWD')
+plt.plot(SWD_JJA_anom_pd.index, SWD_JJA_anom_pd, label='SWd', marker='o', color='#377EB8', markersize=4, mec='none')
+SHF_JJA_anom_pd = read_data(store_path + 'SHF_JJA_anomalies.csv', 'SHF')
+plt.plot(SHF_JJA_anom_pd.index, SHF_JJA_anom_pd, label='SHF', marker='o', color='black', markersize=4, mec='none')
+plt.legend(numpoints=1, loc=8, frameon=False, ncol=3)
+plt.ylim(-25, 25)
+plt.ylabel('W m$^{-2}$')
+
+plt.xticks(xticks, [])
+plt.xlim('1999-01-01', '2017-06-01')
+
+#ax_rad.spines['left'].axis.axes.tick_params(direction='outward')
+ax_rad.tick_params(axis='y', direction='out')
+ax_rad.yaxis.tick_left()
+#ax_rad.xaxis.tick_bottom()
+plt.tick_params(axis='x', bottom='off', top='off')
+ax_rad.spines['top'].set_visible(False)
+ax_rad.spines['right'].set_visible(False)
+ax_rad.spines['bottom'].set_visible(False)
+ax_rad.annotate('(a)', fontsize=8, fontweight='bold', xy=(0.05,0.95), xycoords='axes fraction',
+           horizontalalignment='left', verticalalignment='top')
+
+
 ## Subplot: other fluxes -----------------------------------------------------
-ax_dark = plt.subplot(3, 1, 1)
+ax_dark = plt.subplot(3, 1, 2)
 
 dark_norm = read_data(store_path + 'dark_norm_JJA.csv','dark_norm')
 plt.plot(dark_norm.index, dark_norm, color='black', markersize=4, mec='none', marker='o', label='Norm. Dark.', zorder=5)
@@ -62,7 +93,7 @@ ax_dark.yaxis.tick_left()
 ax_dark.spines['top'].set_visible(False)
 ax_dark.spines['right'].set_visible(False)
 ax_dark.spines['bottom'].set_visible(False)
-ax_dark.annotate('(a)', fontsize=8, fontweight='bold', xy=(0.05,0.95), xycoords='axes fraction',
+ax_dark.annotate('(b)', fontsize=8, fontweight='bold', xy=(0.05,0.95), xycoords='axes fraction',
            horizontalalignment='left', verticalalignment='top', zorder=10)
 
 #ax_precip.spines['right'].axis.axes.tick_params(direction='outward')
@@ -73,35 +104,6 @@ ax_precip.spines['top'].set_visible(False)
 ax_precip.spines['left'].set_visible(False)
 ax_precip.spines['bottom'].set_visible(False)
 
-
-## Subplot: radiative fluxes -------------------------------------------------
-ax_rad = plt.subplot(3, 1, 2)
-
-plt.axhline(y=0, color='gray', linewidth=0.5)
-
-LWD_JJA_anom_pd = read_data(store_path + 'LWD_JJA_anomalies.csv', 'LWD')
-plt.plot(LWD_JJA_anom_pd.index, LWD_JJA_anom_pd, label='LWd', marker='o', color='#E31A1C', markersize=4, mec='none')
-SWD_JJA_anom_pd = read_data(store_path + 'SWD_JJA_anomalies.csv', 'SWD')
-plt.plot(SWD_JJA_anom_pd.index, SWD_JJA_anom_pd, label='SWd', marker='o', color='#377EB8', markersize=4, mec='none')
-SHF_JJA_anom_pd = read_data(store_path + 'SHF_JJA_anomalies.csv', 'SHF')
-plt.plot(SHF_JJA_anom_pd.index, SHF_JJA_anom_pd, label='SHF', marker='o', color='black', markersize=4, mec='none')
-plt.legend(numpoints=1, loc=8, frameon=False, ncol=3)
-plt.ylim(-25, 25)
-plt.ylabel('W m$^{-2}$')
-
-plt.xticks(xticks, [])
-plt.xlim('1999-01-01', '2017-06-01')
-
-#ax_rad.spines['left'].axis.axes.tick_params(direction='outward')
-ax_rad.tick_params(axis='y', direction='out')
-ax_rad.yaxis.tick_left()
-#ax_rad.xaxis.tick_bottom()
-plt.tick_params(axis='x', bottom='off', top='off')
-ax_rad.spines['top'].set_visible(False)
-ax_rad.spines['right'].set_visible(False)
-ax_rad.spines['bottom'].set_visible(False)
-ax_rad.annotate('(b)', fontsize=8, fontweight='bold', xy=(0.05,0.95), xycoords='axes fraction',
-           horizontalalignment='left', verticalalignment='top')
 
 
 ## Subplot: ratios (of absolute fluxes, not anomalies) -----------------------
