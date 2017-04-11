@@ -12,7 +12,7 @@ mar_path_anomalies = '/scratch/MARv3.6.2-7.5km-v2-ERA/ICE.*nc'
 
 # FROM STATISTICS.PY --------------------------------------------------------
 
-Melt anomaly
+# Melt anomaly
 ME_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 	dim='TIME', transform_func=lambda ds: ds.ME.sel(X=x_slice, 
 		Y=y_slice))
@@ -60,6 +60,21 @@ ttmin_JJA_count = ttmin_JJA.where(ttmin_JJA > 0) \
 ttmin_JJA_count_pd = ttmin_JJA_count.to_pandas().squeeze()
 ttmin_JJA_count_pd.index = pd.date_range('2000-01-01', '2016-01-01', freq='1AS')
 ttmin_JJA_count_pd.to_csv(store_path + 'TTMIN_JJA_count.csv')
+
+
+## TT
+
+TT_all = mar_raster.open_mfxr(mar_path,
+	dim='TIME', transform_func=lambda ds: ds.TT.sel(X=x_slice, 
+		Y=y_slice))
+
+TT_JJA = TT_all.sel(TIME=slice('2000', '2016')) \
+	.isel(ATMLAY=2) \
+	.where(mar_mask_dark.r > 0) \
+	.where(TT_all['TIME.season'] == 'JJA') \
+	.mean(dim=('X', 'Y')) \
+	.resample('1AS', dim='TIME', how='mean').to_pandas()
+TT_JJA.to_csv(store_path + 'TT_JJA_mean.csv')
 
 
 

@@ -50,7 +50,7 @@ my_styles = {
 }
 sns.set_style("white")
 #sns.set_style("ticks", my_styles)
-sns.despine() # or e.g. sns.despine(offset=10, trim=True)
+#sns.despine() # or e.g. sns.despine(offset=10, trim=True)
 
 # ---------------------------------------------------------------------------- 
 ## Load in data and set global parameters 

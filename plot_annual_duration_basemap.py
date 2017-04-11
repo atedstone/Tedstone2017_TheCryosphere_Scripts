@@ -125,6 +125,6 @@ cbar.outline.set_visible(False)
 
 # Save etc
 
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/dark_ice_45_JJA_fix.pdf', dpi=300)
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/dark_ice_45_JJA_fix.png', dpi=600)
 
 

@@ -36,7 +36,7 @@ SHF_JJA_anom_pd = read_data(store_path + 'SHF_JJA_anomalies.csv', 'SHF')
 plt.plot(SHF_JJA_anom_pd.index, SHF_JJA_anom_pd, label='SHF', marker='o', color='black', markersize=4, mec='none')
 plt.legend(numpoints=1, loc=8, frameon=False, ncol=3)
 plt.ylim(-25, 25)
-plt.ylabel('W m$^{-2}$')
+plt.ylabel('W m$^{-2}$', labelpad=7)
 
 plt.xticks(xticks, [])
 plt.xlim('1999-01-01', '2017-06-01')
@@ -61,7 +61,7 @@ plt.plot(dark_norm.index, dark_norm, color='black', markersize=4, mec='none', ma
 plt.ylim(0, 1.4)
 plt.yticks([0, 0.4, 0.8, 1.2, 1.6], [0, 0.4, 0.8, 1.2, 1.6])
 plt.tick_params(axis='x', bottom='off', top='off')
-plt.ylabel('Normalised Darkness')
+plt.ylabel('$D_N$', labelpad=8)
 plt.xticks(xticks, [])
 plt.xlim('1999-01-01', '2017-06-01')
 
@@ -80,7 +80,7 @@ plt.legend(numpoints=1, loc=9, frameon=False, ncol=2)
 plt.ylim(0, 200)
 plt.yticks([0, 40, 80, 120, 160], [0, 40, 80, 120, 160])
 plt.tick_params(axis='x', bottom='off', top='off')
-plt.ylabel('mmWE / year')
+plt.ylabel('mm W.E. y$^{-1}$')
 plt.xticks(xticks, [])
 plt.xlim('1999-01-01', '2017-06-01')
 
@@ -106,24 +106,55 @@ ax_precip.spines['bottom'].set_visible(False)
 
 
 
-## Subplot: ratios (of absolute fluxes, not anomalies) -----------------------
+## Subplot: MOF --------------------------------------------------------------
 
 ax_ratios = plt.subplot(3, 1, 3)
 
-lwd = read_data(store_path + 'LWD_JJA_absolute_mean.csv', 'LWD')
-swd = read_data(store_path + 'SWD_JJA_absolute_mean.csv', 'SWD')
-shf = read_data(store_path + 'SHF_JJA_absolute_mean.csv', 'SHF')
-rat1 = lwd / swd
-rat2 = (lwd+shf) / swd
+LWout = 315.6  # Cuffey & Paterson (2010) p.148
 
-plt.plot(rat1.index, rat1, label='LWD:SWD', marker='o', color='black', markersize=4, mec='none')
-plt.plot(rat2.index, rat2, label='LWD+SHF : SWD', marker='o', color='black', linestyle=(0, (2,1)), markersize=4, mec='none')
+# Read CSV created by export_df_hodson.py
+df = pd.read_csv(store_path + 'b01_shf_lw_sw_al_cusum.csv', 
+	index_col=0, parse_dates=True)
 
-plt.legend(numpoints=1, loc=8, frameon=False, ncol=2)
+SWnet = df['SW'] * (1 - (df['AL'] / 100))
 
-plt.ylabel('Ratio')
-plt.ylim(0.7, 1.1)
-plt.yticks([0.7, 0.8, 0.9, 1.0, 1.1], [0.7, 0.8, 0.9, 1.0, 1.1])
+MOF = df['SHF'] + df['LW'] - LWout - SWnet
+MOF = MOF[:'2016-08-31'] #cull september so that periods match with MAR data
+
+MOF_JJA_mean = MOF.where((MOF.index.month >= 6) & (MOF.index.month < 9)) \
+	.resample('1AS') \
+	.mean()
+MOF_JJA_mean.to_csv(store_path + 'MOF_JJA_mean.csv')	
+
+MOF_bare_mean = MOF.where(periods_bare2end) \
+	.resample('1AS') \
+	.mean()
+MOF_bare_mean.to_csv(store_path + 'MOF_bare_mean.csv')	
+
+MOF_JJA_std = MOF.where((MOF.index.month >= 6) & (MOF.index.month < 9)) \
+	.resample('1AS') \
+	.std()
+
+MOF_bare_std = MOF.where(periods_bare2end) \
+	.resample('1AS') \
+	.std()
+
+# MOF_JJA_max = MOF.where((MOF.index.month >= 6) & (MOF.index.month < 9)) \
+# 	.resample('1AS') \
+# 	.max()	
+
+plt.errorbar(MOF_JJA_mean.index, MOF_JJA_mean, yerr=MOF_JJA_std * 3, 
+	marker='o', color='black', markersize=4, mec='none',
+	elinewidth=0.5, ecolor='gray', 
+	label='$SHF + LW_{net} - SW_{net}$')
+
+# plt.plot(MOF_JJA_max.index, MOF_JJA_max, marker='o', mfc='none', mec='black', 
+# 	markersize=3, color='none')
+
+#plt.legend(numpoints=0, loc=7, frameon=False, ncol=2)
+plt.ylabel('Melt-out flux (W m$^{-2}$)')
+#plt.ylim(-230, 0)
+#plt.yticks([-, -80, -60, -40, -20, 0], [-100, -80, -60, -40, -20, 0])
 
 plt.xlabel('Year')
 
@@ -142,4 +173,4 @@ plt.xticks(xticks, ['2000', '2002', '2004', '2006', '2008', '2010', '2012', '201
 
 
 plt.tight_layout()
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/energy_fluxes.pdf')
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/energy_fluxes_MOF.pdf')
