@@ -152,7 +152,7 @@ plt.errorbar(MOF_JJA_mean.index, MOF_JJA_mean, yerr=MOF_JJA_std * 3,
 # 	markersize=3, color='none')
 
 #plt.legend(numpoints=0, loc=7, frameon=False, ncol=2)
-plt.ylabel('Melt-out flux (W m$^{-2}$)')
+plt.ylabel('MOF (W m$^{-2}$)')
 #plt.ylim(-230, 0)
 #plt.yticks([-, -80, -60, -40, -20, 0], [-100, -80, -60, -40, -20, 0])
 
