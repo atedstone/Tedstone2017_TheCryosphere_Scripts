@@ -10,9 +10,9 @@ from prep_env_vars import *
 
 mar_path_anomalies = '/scratch/MARv3.6.2-7.5km-v2-ERA/ICE.*nc'
 
-# FROM STATISTICS.PY --------------------------------------------------------
+# # FROM STATISTICS.PY --------------------------------------------------------
 
-# Melt anomaly
+# # Melt anomaly
 ME_all_long = mar_raster.open_mfxr(mar_path_anomalies,
 	dim='TIME', transform_func=lambda ds: ds.ME.sel(X=x_slice, 
 		Y=y_slice))
@@ -204,3 +204,30 @@ SF_avg = SF_all.sel(TIME=slice('2000', '2016')) \
 	.where(mar_mask_dark.r > 0) \
 	.mean(dim=('X', 'Y')).to_pandas()
 SF_avg.to_csv(store_path + 'SF_daily_common_mean.csv')
+
+
+
+
+
+##############################################################################
+## Xavier-suggested way of computing anomlies
+SHF_all_long = mar_raster.open_mfxr(mar_path_anomalies,
+	dim='TIME', transform_func=lambda ds: ds.SHF.sel(X=x_slice, 
+		Y=y_slice)) * -1
+
+SHF_clim_daily = SHF_all_long.sel(TIME=slice('1981', '2000')) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')) \
+	.load() \
+	.rolling(TIME=10).mean(dim='TIME')
+SHF_clim_daily = SHF_clim_daily.groupby('TIME.dayofyear').mean('TIME')
+
+
+SHF_daily = SHF_all_long.sel(TIME=slice('2000', '2016')) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y'))
+
+SHF_bare_anom_daily = (SHF_daily.groupby('TIME.dayofyear') - SHF_clim_daily) \
+	.where(periods_bare2end) \
+	.resample('1AS', dim='TIME', how='mean').to_pandas()
+SHF_JJA_anom_daily.to_csv(store_path + 'SHF_anomalies_bare.csv')
