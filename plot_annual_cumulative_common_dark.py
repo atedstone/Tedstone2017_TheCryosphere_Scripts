@@ -1,6 +1,7 @@
 from prep_env_vars import *
 
 from matplotlib import dates
+from matplotlib import cm
 
 plt.style.use('default')
 
@@ -18,6 +19,11 @@ SHSN2_all = mar_raster.open_mfxr(mar_path,
 	dim='TIME', transform_func=lambda ds: ds.SHSN2.sel(X=x_slice, 
 		Y=y_slice))
 snow_above_ice = SHSN2_all.sel(SECTOR1_1=1.0).where(mar_mask_dark.r > 0).where((SHSN2_all['TIME.month'] >= 4) & (SHSN2_all['TIME.month'] < 9)).mean(dim=('X', 'Y')).to_pandas()
+
+
+## Load percent common area cloud cover
+
+#clouds = read_data(store_path + 'cloudy_commonarea_perc_daily.csv', '% cloudy')
 
 
 # Plot amount of snow above ice on the same axes as above
@@ -66,19 +72,28 @@ for year in onset.TIME:
 	ax2 = ax.twinx()
 	y = pd.to_datetime(year.values).strftime('%Y')
 
-	hist, bin_edges = np.histogram(onset.sel(TIME=year).dark.where(mask_dark > 0).where(onset.dark < 240).values,
-		range=(152, 239), bins=239-152)
-
+	## Windowed dataset
+	# Subtract 3 days from data to compensate for window length (this was not done in dark_ice_mapping_SW.py)
+	data = (onset.sel(TIME=year).dark.where(mask_dark > 0).where(onset.dark < 240).values) - 3
+	# Generate histogram
+	hist, bin_edges = np.histogram(data, range=(152, 239), bins=239-152)
+	# Convert pixels to area in kms
 	hist = hist * 0.377
 	bin_dates = [dt.datetime.strptime('%s %s' %(y, int(b)), '%Y %j') for b in bin_edges]
+	# Accumulate
 	csum = np.cumsum(hist)
+
 	plt.plot(bin_dates[:-1], csum, '-', color='#CB181D', lw=2, alpha=0.8)
+
+	# Save data to csv
 	csum_pd = pd.Series(csum, index=bin_dates[:-1])
 	csum_pd.to_csv(store_path + 'darkice_cumulative_%s.csv' %y)
 	csum_store.append(csum_pd)
 
 	# change this to only be plotted when there are 'sufficient' good quality obs.
 	#plt.plot(bin_edges[:-1], np.cumsum(hist), 'o', mec='#08306B', mfc='none', markersize=4, alpha=0.4)
+
+	#plt.scatter(clouds[str(y)].index, [119000,]*len(clouds[str(y)]), c=cm.Greys(np.abs(clouds[str(y)]/100)), s=2, alpha=0.7, marker='s', edgecolors='none')
 
 	plt.ylim(-5000, 120000)
 	
