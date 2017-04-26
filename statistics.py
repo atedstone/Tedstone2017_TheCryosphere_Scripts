@@ -31,7 +31,8 @@ df_jja = pd.DataFrame({
 		'snow_sum_bare': read_data(store_path + 'SF_bare_sum.csv', 'sf_bare_sum'),
 		'MOF': read_data(store_path + 'MOF_JJA_mean.csv', 'MOF_JJA_mean'),
 		'TT': read_data(store_path + 'TT_JJA_mean.csv', 'TT_JJA_mean'),
-		'NAO': read_data(store_path + 'NAO_JJA_mean.csv', 'NAO_JJA')
+		'NAO': read_data(store_path + 'NAO_JJA_mean.csv', 'NAO_JJA'),
+		'GBI': read_data(store_path + 'GBI_JJA_mean.csv', 'GBI_JJA')
 	})
 
 print(df_jja.corr(method='spearman').round(2))
@@ -44,7 +45,7 @@ df_jja.to_excel('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/
 
 ### Regression for JJA annual values -----------------------------------------
 
-X_vars = ('SHF_anom', 'melt_rate_JJA_anomaly', 'melt_rate_bare', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum', 'snow_sum_JJA', 'snow_sum_bare', 'SWD_anom', 'LWD_anom', 'MOF', 'TT', 'NAO')
+X_vars = ('SHF_anom', 'melt_rate_JJA_anomaly', 'melt_rate_bare', 'snow_clear_doy', 'ttmin_count', 'LWD_SHF_vs_SWD', 'RF_sum', 'snow_sum_JJA', 'snow_sum_bare', 'SWD_anom', 'LWD_anom', 'MOF', 'TT', 'NAO', 'GBI')
 Y_vars = ('B01_avg', 'B01_avg_bare', 'dark_perc', 'dark_norm', 'dark_norm_bare', 'SHF_anom')
 
 r2 = {}
@@ -107,7 +108,7 @@ rcParams['axes.unicode_minus'] = False
 X_vars = ('SHF_anom', 'snow_clear_doy', 'ttmin_count', 'TT')
 Y_vars = ('B01_avg', 'dark_norm')
 
-X_labels = ('SHF anomaly (W m$^{-2}$)', '$\\tilde{t_B}$', '$\sum{T > 0}$', 'T ($^o$C)')
+X_labels = ('SHF$\prime$ (W m$^{-2}$)', '$\\tilde{t_B}$', '$\sum{T > 0}$', 'T ($^o$C)')
 Y_labels = ('$\\bar{D_I}$', '$D_N$')
 letters = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
 xlims = ((-10, 20), (150, 200), (0, 60), (-1, 1), (-10, 20), (150, 200), (0, 60), (-1, 1) )
