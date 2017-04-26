@@ -11,6 +11,7 @@ al = mod10.Snow_Albedo_Daily_Tile.where(mask_dark > 0)
 tot_px = mask_dark.where(mask_dark > 0).count(dim=('X', 'Y'))
 cloudy = al.where(al == 150).where(mask_dark > 0).count(dim=('X', 'Y'))
 daily_perc_cloudy = (100 / tot_px) * cloudy
+daily_perc_cloudy.to_pandas().to_csv(store_path + 'cloudy_commonarea_perc_daily.csv')
 
 ice = b02.where(b02 < 0.6).where(mask_dark > 0).count(dim=('X', 'Y'))
 
