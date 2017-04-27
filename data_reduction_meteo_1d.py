@@ -61,6 +61,11 @@ ttmin_JJA_count_pd = ttmin_JJA_count.to_pandas().squeeze()
 ttmin_JJA_count_pd.index = pd.date_range('2000-01-01', '2016-01-01', freq='1AS')
 ttmin_JJA_count_pd.to_csv(store_path + 'TTMIN_JJA_count.csv')
 
+ttmin_daily = ttmin_all.sel(TIME=slice('2000', '2016')) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')).to_pandas()
+ttmin_daily.to_csv(store_path + 'TTMIN_daily.csv')
+
 
 ## TT
 
