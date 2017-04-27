@@ -73,10 +73,11 @@ for year in onset.TIME:
 	y = pd.to_datetime(year.values).strftime('%Y')
 
 	## Windowed dataset
-	# Subtract 3 days from data to compensate for window length (this was not done in dark_ice_mapping_SW.py)
-	data = (onset.sel(TIME=year).dark.where(mask_dark > 0).where(onset.dark < 240).values) - 3
+	data = onset.sel(TIME=str(y)).dark.where(mask_dark > 0).where(onset.dark < 240)
+	data = data.values[~np.isnan(data.values)]
+	print('%s : %s px' %(y, len(data.flatten())))
 	# Generate histogram
-	hist, bin_edges = np.histogram(data, range=(152, 239), bins=239-152)
+	hist, bin_edges = np.histogram(data.flatten(), range=(152, 239), bins=239-152)
 	# Convert pixels to area in kms
 	hist = hist * 0.377
 	bin_dates = [dt.datetime.strptime('%s %s' %(y, int(b)), '%Y %j') for b in bin_edges]
@@ -95,7 +96,7 @@ for year in onset.TIME:
 
 	#plt.scatter(clouds[str(y)].index, [119000,]*len(clouds[str(y)]), c=cm.Greys(np.abs(clouds[str(y)]/100)), s=2, alpha=0.7, marker='s', edgecolors='none')
 
-	plt.ylim(-5000, 120000)
+	plt.ylim(-500, 12000)
 	
 	# if n in (1, 10):
 	# 	plt.ylabel('x 10$^4$ km$^3$')
@@ -113,7 +114,8 @@ for year in onset.TIME:
 
 	ax2.yaxis.tick_right()
 	if n in (5, 10, 15, 17):
-		plt.yticks([0, 40000, 80000, 120000], [0, 4, 8, 12])
+		# plt.yticks([0, 40000, 80000, 120000], [0, 4, 8, 12])
+		plt.yticks([0, 4000, 8000, 12000], [0, 4, 8, 12])
 		ax2.tick_params(axis='y', direction='out')
 	else:
 		plt.yticks([])
@@ -133,7 +135,7 @@ for year in onset.TIME:
 		plt.tick_params(axis='x', bottom='on', top='off')
 
 	if n == 17:
-		plt.yticks([0, 40000, 80000], [0, 4, 8])
+		plt.yticks([0, 4000, 8000], [0, 4, 8])
 		
 	n += 1
 
@@ -143,7 +145,7 @@ plt.subplots_adjust(wspace=0.1, hspace=0.2, bottom=0.1, top=0.98)
 # Axis labels
 fig.text(0.06, 0.61, 'Mean Snow Depth (m)', ha='center', va='center', 
 	color='#1D91C0', rotation='vertical') 
-fig.text(0.966, 0.63, 'Cumulative Dark Ice Extent (x 10$^4$ km$^3$)', ha='center', 
+fig.text(0.966, 0.63, 'Cumulative Dark Ice Extent (x 10$^3$ km$^2$)', ha='center', 
 	va='center', color='#CB181D', rotation='vertical') 
 fig.text(0.51, 0.03, 'Month of Year', ha='center', va='center', color='black') 
 
