@@ -63,7 +63,7 @@ ttmin_JJA_count_pd.to_csv(store_path + 'TTMIN_JJA_count.csv')
 
 ttmin_daily = ttmin_all.sel(TIME=slice('2000', '2016')) \
 	.where(mar_mask_dark.r > 0) \
-	.mean(dim=('X', 'Y')).to_pandas()
+	.mean(dim=('X', 'Y')).to_pandas().resample('24H').first()
 ttmin_daily.to_csv(store_path + 'TTMIN_daily.csv')
 
 
