@@ -21,6 +21,15 @@ SHSN2_all = mar_raster.open_mfxr(mar_path,
 snow_above_ice = SHSN2_all.sel(SECTOR1_1=1.0).where(mar_mask_dark.r > 0).where((SHSN2_all['TIME.month'] >= 4) & (SHSN2_all['TIME.month'] < 9)).mean(dim=('X', 'Y')).to_pandas()
 
 
+# Snowline clearing markers (t_B)
+bare_doy_med_masked_common = onset.bare.where(mask_dark > 0).median(dim=['X','Y'])
+bare_doy_q25_masked_common = onset.bare.where(mask_dark > 0).quantile(0.25, dim=['X','Y'])
+bare_doy_q75_masked_common = onset.bare.where(mask_dark > 0).quantile(0.75, dim=['X','Y'])
+# Remove the window duration from the date to get the true snowline retreat date
+bare_doy_med_masked_common -= 4 
+bare_doy_q25_masked_common -= 4 
+bare_doy_q75_masked_common -= 4 
+
 ## Load percent common area cloud cover
 
 #clouds = read_data(store_path + 'cloudy_commonarea_perc_daily.csv', '% cloudy')
@@ -91,6 +100,17 @@ for year in onset.TIME:
 	csum_pd.to_csv(store_path + 'darkice_cumulative_%s.csv' %y)
 	csum_store.append(csum_pd)
 
+	clear = int(bare_doy_med_masked_common.sel(TIME=str(y)).values[0])
+	clear_date = dt.datetime.strptime('%s %s' %(y, clear), '%Y %j')
+	clearq25 = int(bare_doy_q25_masked_common.sel(TIME=str(y)).values[0])
+	clearq25_date = dt.datetime.strptime('%s %s' %(y, clearq25), '%Y %j')
+	clearq75 = int(bare_doy_q75_masked_common.sel(TIME=str(y)).values[0])
+	clearq75_date = dt.datetime.strptime('%s %s' %(y, clearq75), '%Y %j')
+
+	#plt.axvline(clear_date, color='#969696', lw=1, zorder=1, ymax=0.6)
+	plt.plot(clear_date, 4000, '|', color='gray', markersize=4)
+	plt.plot([clearq25_date, clearq75_date], [4000, 4000], '-', color='gray', linewidth=0.6)
+
 	# change this to only be plotted when there are 'sufficient' good quality obs.
 	#plt.plot(bin_edges[:-1], np.cumsum(hist), 'o', mec='#08306B', mfc='none', markersize=4, alpha=0.4)
 
@@ -149,7 +169,7 @@ fig.text(0.966, 0.63, 'Cumulative Dark Ice Extent (x 10$^3$ km$^2$)', ha='center
 	va='center', color='#CB181D', rotation='vertical') 
 fig.text(0.51, 0.03, 'Month of Year', ha='center', va='center', color='black') 
 
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/snowdepth_darkice.pdf')
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission2/figures/snowdepth_darkice.pdf')
 
 csum_all = pd.concat(csum_store)
 csum_all.to_csv(store_path + 'cumulative_darkice.csv')
@@ -158,3 +178,4 @@ csum_all.to_csv(store_path + 'cumulative_darkice.csv')
 
 
 
+	

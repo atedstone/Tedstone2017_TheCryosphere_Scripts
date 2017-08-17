@@ -104,19 +104,31 @@ for year, series in b01_thresh_pd.T.iterrows():
 # 	plt.scatter(series_x + 0.5, y, s=1.5, c=series_clean.values, cmap='Set1', vmin=-1, vmax=3, edgecolors='none')
 # 	n -= 1
 
+# Snowline clearing markers (t_B)
+bare_doy_q25_masked_common = onset.bare.where(mask_dark > 0).quantile(0.25, dim=['X','Y'])
+bare_doy_q75_masked_common = onset.bare.where(mask_dark > 0).quantile(0.75, dim=['X','Y'])
+# Remove the window duration from the date to get the true snowline retreat date
+bare_doy_q25_masked_common -= 4 
+bare_doy_q75_masked_common -= 4 
+
 n = 17
 for year in range(2000, 2017):
+	clearq25 = int(bare_doy_q25_masked_common.sel(TIME=str(year)).values[0]) - 121
+	clearq75 = int(bare_doy_q75_masked_common.sel(TIME=str(year)).values[0]) - 121
+	plt.plot([clearq25, clearq75], [n-0.5, n-0.5], '-', color='black', linewidth=0.5)
+
 	clear = bare_doy_med_masked_common.sel(TIME=str(year)).values[0] - 121
 	if n == 17:
 		plt.plot(clear + 0.5, n - 0.5, '>', mfc='black', mec='none', markersize=3, label='$\\tilde{t_B}$')
 	else:
 		plt.plot(clear + 0.5, n - 0.5, '>', mfc='black', mec='none', markersize=3)
+
 	n -= 1
 
 plt.legend(numpoints=1, loc=(0.91, 0.99), frameon=False, handletextpad=0.05)
 
 plt.tight_layout()
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/B01.png', dpi=600)
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission2/figures/B01.png', dpi=600)
 
 
 

@@ -54,7 +54,7 @@ data_extent = (data_ll[0], data_ur[0], data_ll[1], data_ur[1])
 shps_loader = None
 plt.close()
 
-def facet(fig, ax, data, title_label, label_grid, imshow_kws):
+def facet(fig, ax, data, title_label, label_grid, imshow_kws, de_km_fmt):
 
 	facet_map = plotmap.Map(extent=fig_extent, lon_0=lon_0, fig=fig, ax=ax)
 
@@ -70,6 +70,12 @@ def facet(fig, ax, data, title_label, label_grid, imshow_kws):
 	# Facet title
 	facet_map.ax.annotate(title_label,fontsize=6, fontweight='bold', xy=(0.5, 1.10), xycoords='axes fraction',
            horizontalalignment='center', verticalalignment='top',zorder=300)
+
+	# Facet extent
+	if de_km_fmt is not False:
+		facet_map.ax.annotate(de_km_fmt,fontsize=6, xy=(0.06, 0.97), xycoords='axes fraction',
+        	   horizontalalignment='left', verticalalignment='top',zorder=3000,
+        	   bbox=dict(boxstyle='square,pad=0.2', fc='#e3e3e3', ec='none'))
 	
 	# Ticks/graticules
 	if label_grid:
@@ -100,8 +106,11 @@ for year in toplot:
 	else:
 		label_grid = False
 
+	de_km = (np.sum(np.where(year >= 5, 1, 0)) * (614.523 * 613.923)) / 1000000
+	de_km_fmt = '{:.0f}'.format(de_km) + ' km$^2$'
+
 	f = facet(fig, ax, np.flipud(year.values), year['TIME.year'].values, 
-		label_grid, imshow_kws)
+		label_grid, imshow_kws, de_km_fmt)
 
 	n += 1
 
@@ -110,7 +119,9 @@ ax = plt.subplot(2, 9, n)
 mask_kws = dict(cmap='Blues', vmin=0, vmax=1, interpolation='none')
 mask_data = np.flipud(mask_dark.values)
 mask_data = np.where(mask_data == 1, 1, np.nan)
-f2 = facet(fig, ax, mask_data, 'Common area', False, mask_kws)
+de_km = (np.sum(np.where(mask_data == 1, 1, 0)) * (614.523 * 613.923)) / 1000000
+de_km_fmt = '{:.0f}'.format(de_km) + ' km$^2$'
+f2 = facet(fig, ax, mask_data, 'Common area', False, mask_kws, de_km_fmt)
 
 plt.subplots_adjust(wspace=0.05, hspace=0.13, bottom=0.15, left=0.03, right=0.97, top=0.95)
 
@@ -125,6 +136,6 @@ cbar.outline.set_visible(False)
 
 # Save etc
 
-plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/figures/dark_ice_45_JJA_fix.png', dpi=600)
+plt.savefig('/home/at15963/Dropbox/work/papers/tedstone_darkice/submission2/figures/dark_ice_45_JJA_kmlabel.png', dpi=600)
 
 
