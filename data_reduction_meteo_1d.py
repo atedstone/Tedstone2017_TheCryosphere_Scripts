@@ -81,7 +81,10 @@ TT_JJA = TT_all.sel(TIME=slice('2000', '2016')) \
 	.resample('1AS', dim='TIME', how='mean').to_pandas()
 TT_JJA.to_csv(store_path + 'TT_JJA_mean.csv')
 
-
+TT_daily = TT_all.sel(TIME=slice('2000', '2016')).isel(ATMLAY=0) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')).to_pandas().resample('24H').first()
+TT_daily.to_csv(store_path + 'TT_daily.csv')
 
 # # Radiative fluxes -----------------------------------------------------------
 SW_all_long = mar_raster.open_mfxr(mar_path_anomalies,
@@ -236,3 +239,14 @@ SHF_bare_anom_daily = (SHF_daily.groupby('TIME.dayofyear') - SHF_clim_daily) \
 	.where(periods_bare2end) \
 	.resample('1AS', dim='TIME', how='mean').to_pandas()
 SHF_JJA_anom_daily.to_csv(store_path + 'SHF_anomalies_bare.csv')
+
+
+
+### Wind ?
+UV_all = mar_raster.open_mfxr(mar_path,
+	dim='TIME', transform_func=lambda ds: ds.UV.sel(X=x_slice, 
+		Y=y_slice))
+UV_daily = UV_all.sel(TIME=slice('2000', '2016')).isel(ATMLAY=0) \
+	.where(mar_mask_dark.r > 0) \
+	.mean(dim=('X', 'Y')).to_pandas().resample('24H').first()
+UV_daily.to_csv(store_path + 'UV_daily.csv')
