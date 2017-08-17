@@ -65,7 +65,7 @@ y_slice = slice(-949047,69833)
 
 min_dark_days = 10
 
-store_path = '/home/at15963/Dropbox/work/papers/tedstone_darkice/submission1/data/'
+store_path = '/home/at15963/Dropbox/work/papers/tedstone_darkice/submission2/data/'
 
 
 def read_data(fpath, name):
