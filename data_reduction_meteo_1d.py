@@ -235,10 +235,17 @@ SHF_daily = SHF_all_long.sel(TIME=slice('2000', '2016')) \
 	.where(mar_mask_dark.r > 0) \
 	.mean(dim=('X', 'Y'))
 
-SHF_bare_anom_daily = (SHF_daily.groupby('TIME.dayofyear') - SHF_clim_daily) \
+SHF_JJA_bare_anom_daily = (SHF_daily.groupby('TIME.dayofyear') - SHF_clim_daily) \
 	.where(periods_bare2end) \
 	.resample('1AS', dim='TIME', how='mean').to_pandas()
-SHF_JJA_anom_daily.to_csv(store_path + 'SHF_anomalies_bare.csv')
+SHF_JJA_bare_anom_daily.to_csv(store_path + 'SHF_anomalies_bare_dailyclim.csv')
+
+
+
+SHF_JJA_bare_anom = (SHF_daily \
+	.where(periods_bare2end) \
+	.resample('1AS', dim='TIME', how='mean') - SHF_JJA_clim).to_pandas() 
+SHF_JJA_bare_anom.to_csv(store_path + 'SHF_anomalies_bare_JJAclim.csv')
 
 
 
