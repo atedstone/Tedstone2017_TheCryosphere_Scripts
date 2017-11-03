@@ -116,6 +116,18 @@ mask_dark = mask_dark.where(mask_dark >= 4).notnull()
 mar_mask_dark = mar_raster.create_mar_res(mask_dark, mar_kws, gdal.GDT_Byte)
 mask_dark_nan = np.where(mask_dark == 0, np.nan, 1)
 
+# Output single spatial mask at both resolutions
+proj4 = "+proj=sterea +lat_0=70.5 +lon_0=-40 +k=1 +datum=WGS84 +units=m"
+geotrans = (onset.X[0], onset.X[1] - onset.X[0], 0, onset.Y[-1], 0,  onset.Y[-2] - onset.Y[-1])
+georaster.SingleBandRaster.from_array(
+	np.flipud(mask_dark.values),
+	geotrans,
+	proj4
+	).save_geotiff('/scratch/physical_controls/mask_dark_common_area_613m.tif')
+
+mar_mask_dark_geor = mar_mask_dark
+mar_mask_dark_geor.r = np.flipud(mar_mask_dark_geor.r)
+mar_mask_dark_geor.save_geotiff('/scratch/physical_controls/mask_dark_common_area_7.5km.tif')
 
 
 ## ---------------------------------------------------------------------------
